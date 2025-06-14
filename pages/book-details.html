@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Detayları - Online Kitap İnceleme</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../css/book-details.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <i class="fas fa-book-open me-2"></i>
+                Kitap İnceleme
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Kategoriler
+                        </a>
+                        <ul class="dropdown-menu" id="genreDropdown">
+                            <!-- Kategoriler JavaScript ile yüklenecek -->
+                        </ul>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <!-- Auth buttons will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+            <p class="mt-3">Kitap detayları yükleniyor...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="text-center d-none">
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="errorText">Kitap bulunamadı.</span>
+            </div>
+            <a href="../index.html" class="btn btn-primary mt-3">
+                <i class="fas fa-arrow-left me-1"></i>Ana Sayfaya Dön
+            </a>
+        </div>
+
+        <!-- Book Details Content -->
+        <div class="book-details-content" style="display: none;">
+            <!-- Breadcrumb -->
+            <div id="breadcrumbContainer">
+                <!-- Breadcrumb will be populated by JavaScript -->
+            </div>
+
+            <div class="row">
+                <!-- Book Image -->
+                <div class="col-lg-4 col-md-5 mb-4">
+                    <div class="book-image-container">
+                        <img id="bookPhoto" class="book-image" alt="Kitap Fotoğrafı" style="display: none;">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book Information -->
+                <div class="col-lg-8 col-md-7">
+                    <div class="book-info">
+                        <h1 id="bookTitle" class="book-title"></h1>
+                        <p class="book-author">
+                            <i class="fas fa-user me-2"></i>
+                            <span id="bookAuthor"></span>
+                        </p>
+                        <p class="book-genre">
+                            <i class="fas fa-tag me-2"></i>
+                            <span id="bookGenre"></span>
+                        </p>
+                        <div class="book-price">
+                            <span id="bookPrice" class="price-tag"></span>
+                        </div>
+                        <div class="book-rating mb-4">
+                            <div class="rating-stars" id="bookRating">
+                                <!-- Yıldızlar buraya gelecek -->
+                            </div>
+                            <span class="rating-text" id="bookRatingCount"></span>
+                        </div>
+                        <div class="book-description">
+                            <h5>Kitap Açıklaması</h5>
+                            <p id="bookDescription"></p>
+                        </div>
+                        <div class="book-actions mt-4">
+                            <button class="btn btn-primary btn-lg me-3" onclick="addToCart()">
+                                <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                            </button>
+                            <button class="btn btn-outline-primary btn-lg" onclick="addToFavorites()">
+                                <i class="fas fa-heart me-2"></i>Favorilere Ekle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="reviews-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3>Yorumlar</h3>
+                            <button id="addReviewBtn" class="btn btn-primary" style="display: none;">
+                                <i class="fas fa-plus me-2"></i>Yorum Yap
+                            </button>
+                        </div>
+                        
+                        <!-- Reviews Container -->
+                        <div id="reviewsContainer">
+                            <!-- Yorumlar buraya gelecek -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-star me-2"></i>Yorum Yap
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Loading Spinner -->
+                    <div id="reviewLoadingSpinner" class="text-center d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yorum ekleniyor...</span>
+                        </div>
+                        <p class="mt-3">Yorumunuz ekleniyor...</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="reviewErrorMessage" class="alert alert-danger d-none" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span></span>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="reviewSuccessMessage" class="alert alert-success d-none" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span></span>
+                    </div>
+
+                    <!-- Review Form -->
+                    <form id="reviewForm">
+                        <div class="mb-3">
+                            <label for="reviewRating" class="form-label">
+                                <i class="fas fa-star me-2"></i>Puanınız
+                            </label>
+                            <div id="ratingStars" class="rating-stars-input">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="reviewRating" name="rating" value="">
+                            <div class="form-text">1-5 arası puan verin</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewComment" class="form-label">
+                                <i class="fas fa-comment me-2"></i>Yorumunuz
+                            </label>
+                            <textarea 
+                                id="reviewComment" 
+                                name="comment" 
+                                class="form-control" 
+                                rows="4" 
+                                placeholder="Kitap hakkında düşüncelerinizi paylaşın... (En az 10 karakter)"
+                                required
+                            ></textarea>
+                            <div class="form-text">Yorumunuz en az 10, en fazla 500 karakter olmalıdır.</div>
+                        </div>
+                        <button type="submit" id="reviewSubmitBtn" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Yorumu Gönder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Kitap İnceleme</h5>
+                    <p class="mb-0">Kitapların dünyasını keşfedin</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2024 Kitap İnceleme. Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/book-details.js"></script>
+</body>
+</html> 
