@@ -20,8 +20,22 @@ const sortSelect = document.getElementById('sortSelect');
 document.addEventListener('DOMContentLoaded', function() {
     loadAllBooks();
     loadGenres();
+    loadHeroPopularBook();
+    loadHeroFavoriteBook();
     setupEventListeners();
     updateAuthButtons();
+
+    // Sıralama butonu event
+    const sortBtn = document.getElementById('sortBtn');
+    if (sortBtn) {
+        sortBtn.addEventListener('click', function() {
+            const sortSelect = document.getElementById('sortSelect');
+            const orderSelect = document.getElementById('orderSelect');
+            const sortBy = sortSelect.value;
+            const order = orderSelect.value;
+            fetchSortedBooks(sortBy, order);
+        });
+    }
 });
 
 // Setup event listeners
@@ -345,11 +359,11 @@ function logout() {
 }
 
 function showProfile() {
-    alert('Profil sayfası yakında eklenecek!');
+    window.location.href = 'pages/profile.html';
 }
 
 function showAdminPanel() {
-    alert('Admin paneli yakında eklenecek!');
+    window.location.href = 'pages/admin.html';
 }
 
 // Book details function - Kitap detay sayfasına yönlendirme
@@ -377,5 +391,129 @@ function updateActiveFilter(genreId) {
                 }
             });
         }
+    }
+}
+
+// YAZARA GÖRE FİLTRELEME
+async function filterByAuthor() {
+    const author = document.getElementById('authorFilterInput').value.trim();
+    if (!author) return;
+    try {
+        showLoading(true);
+        const response = await fetch(`${API_BASE_URL}/filter/by-author?author=${encodeURIComponent(author)}`);
+        if (!response.ok) throw new Error('Yazara göre filtreleme başarısız');
+        const books = await response.json();
+        displayBooks(books);
+    } catch (e) {
+        showError('Yazara göre filtreleme sırasında hata oluştu.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// YILA GÖRE FİLTRELEME
+async function filterByYear() {
+    const year = document.getElementById('yearFilterInput').value.trim();
+    if (!year) return;
+    try {
+        showLoading(true);
+        const response = await fetch(`${API_BASE_URL}/filter/by-year?year=${encodeURIComponent(year)}`);
+        if (!response.ok) throw new Error('Yıla göre filtreleme başarısız');
+        const books = await response.json();
+        displayBooks(books);
+    } catch (e) {
+        showError('Yıla göre filtreleme sırasında hata oluştu.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Load most popular book for the hero section
+async function loadHeroPopularBook() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/MostPopular/most-popular-book`);
+        if (!response.ok) {
+            if (response.status !== 404) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return; // 404 ise sessizce devam et
+        }
+        const book = await response.json();
+        displayHeroPopularBook(book);
+    } catch (error) {
+        console.error('Popüler kitap (hero) yüklenirken hata oluştu:', error);
+    }
+}
+
+// Display the most popular book in the hero section
+function displayHeroPopularBook(book) {
+    const container = document.getElementById('hero-popular-book-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="hero-book-card" onclick="showBookDetails(${book.id})">
+            <div class="hero-book-card-badge"><i class="fas fa-crown me-1"></i>En Popüler</div>
+            <img src="${book.photo || 'https://via.placeholder.com/150x220.png?text=Kitap'}" alt="${book.title}" class="hero-book-img">
+            <div class="hero-book-info">
+                <h5 class="hero-book-title">${truncateText(book.title, 25)}</h5>
+                <p class="hero-book-author">${book.author}</p>
+                <span class="hero-book-price">${book.price.toFixed(2)} TL</span>
+            </div>
+        </div>
+    `;
+}
+
+// Load most favorite book for the hero section
+async function loadHeroFavoriteBook() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/MostPopular/most-favorite-book`);
+        if (!response.ok) {
+            if (response.status !== 404) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return;
+        }
+        const book = await response.json();
+        displayHeroFavoriteBook(book);
+    } catch (error) {
+        console.error('Favori kitap (hero) yüklenirken hata oluştu:', error);
+    }
+}
+
+// Display the most favorite book in the hero section
+function displayHeroFavoriteBook(book) {
+    const container = document.getElementById('hero-favorite-book-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="hero-book-card hero-book-card-favorite" onclick="showBookDetails(${book.id})">
+            <div class="hero-book-card-badge-favorite"><i class="fas fa-heart me-1"></i>En Favori</div>
+            <img src="${book.photo || 'https://via.placeholder.com/150x220.png?text=Kitap'}" alt="${book.title}" class="hero-book-img">
+            <div class="hero-book-info">
+                <h5 class="hero-book-title">${truncateText(book.title, 25)}</h5>
+                <p class="hero-book-author">${book.author}</p>
+                <span class="hero-book-price">${book.price.toFixed(2)} TL</span>
+            </div>
+        </div>
+    `;
+}
+
+// Sıralı kitapları API'den çek
+async function fetchSortedBooks(sortBy, order) {
+    try {
+        showLoading(true);
+        let url = `${API_BASE_URL}/query`;
+        if (sortBy) {
+            url += `?sortBy=${sortBy}`;
+            if (order) url += `&order=${order}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Kitaplar yüklenemedi');
+        allBooks = await response.json();
+        filterAndDisplayBooks();
+    } catch (error) {
+        showError('Kitaplar yüklenirken hata oluştu.');
+    } finally {
+        showLoading(false);
     }
 } 

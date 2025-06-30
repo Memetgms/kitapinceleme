@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Kitap İnceleme</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
+    <style>
+        .admin-sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .admin-content {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .table-responsive {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn-action {
+            margin: 0 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../index.html">
+                <i class="fas fa-book-open me-2"></i>
+                Kitap İnceleme - Admin Panel
+            </a>
+            <div class="d-flex">
+                <button class="btn btn-outline-light me-2" onclick="goToHome()">
+                    <i class="fas fa-home me-1"></i>Ana Sayfa
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" id="userDropdown">
+                        <i class="fas fa-user me-1"></i>Admin
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="showProfile()">
+                            <i class="fas fa-user-circle me-2"></i>Profil
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showAdminPanel()">
+                            <i class="fas fa-cog me-2"></i>Admin Panel
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 px-0">
+                <div class="admin-sidebar p-3">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-cog me-2"></i>Admin Panel
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showDashboard()">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a class="nav-link" href="#" onclick="showBookManagement()">
+                            <i class="fas fa-book me-2"></i>Kitap Yönetimi
+                        </a>
+                        <a class="nav-link" href="#" onclick="showUserManagement()">
+                            <i class="fas fa-users me-2"></i>Kullanıcı Yönetimi
+                        </a>
+                        <a class="nav-link" href="#" onclick="showRoleManagement()">
+                            <i class="fas fa-user-shield me-2"></i>Rol Yönetimi
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10">
+                <div class="admin-content p-4">
+                    <!-- Dashboard Section -->
+                    <div id="dashboardSection">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-book fa-2x mb-2"></i>
+                                        <h4 id="totalBooks">0</h4>
+                                        <p class="mb-0">Toplam Kitap</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-users fa-2x mb-2"></i>
+                                        <h4 id="totalUsers">0</h4>
+                                        <p class="mb-0">Toplam Kullanıcı</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-user-shield fa-2x mb-2"></i>
+                                        <h4 id="totalAdmins">0</h4>
+                                        <p class="mb-0">Admin Sayısı</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-tags fa-2x mb-2"></i>
+                                        <h4 id="totalGenres">0</h4>
+                                        <p class="mb-0">Kategori Sayısı</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Books -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Son Eklenen Kitaplar</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="recentBooksTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Kitap Adı</th>
+                                                <th>Yazar</th>
+                                                <th>Fiyat</th>
+                                                <th>Eklenme Tarihi</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Recent books will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Management Section -->
+                    <div id="bookManagementSection" class="d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-book me-2"></i>Kitap Yönetimi</h2>
+                            <button class="btn btn-primary" onclick="showAddBookModal()">
+                                <i class="fas fa-plus me-1"></i>Yeni Kitap Ekle
+                            </button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="booksTable">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Resim</th>
+                                                <th>Kitap Adı</th>
+                                                <th>Yazar</th>
+                                                <th>Kategori</th>
+                                                <th>Fiyat</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Books will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Management Section -->
+                    <div id="userManagementSection" class="d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-users me-2"></i>Kullanıcı Yönetimi</h2>
+                            <div>
+                                <select class="form-select d-inline-block w-auto me-2" id="roleFilter" onchange="filterUsersByRole()">
+                                    <option value="">Tüm Roller</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="User">User</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="loadUsers()">
+                                    <i class="fas fa-sync me-1"></i>Yenile
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="usersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Kullanıcı Adı</th>
+                                                <th>E-posta</th>
+                                                <th>Ad Soyad</th>
+                                                <th>Kayıt Tarihi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Users will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role Management Section -->
+                    <div id="roleManagementSection" class="d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-user-shield me-2"></i>Rol Yönetimi</h2>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="rolesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Kullanıcı Adı</th>
+                                                <th>E-posta</th>
+                                                <th>Mevcut Rol</th>
+                                                <th>Yeni Rol</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Users with role management will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Book Modal -->
+    <div class="modal fade" id="bookModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookModalTitle">Yeni Kitap Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookForm">
+                        <input type="hidden" id="bookId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Kitap Adı</label>
+                                    <input type="text" class="form-control" id="bookTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Yazar</label>
+                                    <input type="text" class="form-control" id="bookAuthor" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Kategori</label>
+                                    <select class="form-select" id="bookGenre" required>
+                                        <!-- Genres will be loaded here -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Fiyat</label>
+                                    <input type="number" class="form-control" id="bookPrice" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Açıklama</label>
+                                    <textarea class="form-control" id="bookDescription" rows="4" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Yayın Tarihi</label>
+                                    <input type="date" class="form-control" id="bookPublishedDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Resim URL</label>
+                                    <input type="url" class="form-control" id="bookPhoto">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBook()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Role Modal -->
+    <div class="modal fade" id="assignRoleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rol Ata</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="assignRoleForm">
+                        <input type="hidden" id="assignUserId">
+                        <div class="mb-3">
+                            <label class="form-label">Kullanıcı</label>
+                            <input type="text" class="form-control" id="assignUserName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Yeni Rol</label>
+                            <select class="form-select" id="assignRoleName" required>
+                                <option value="">Rol Seçin</option>
+                                <option value="Admin">Admin</option>
+                                <option value="User">User</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="assignRole()">Rol Ata</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

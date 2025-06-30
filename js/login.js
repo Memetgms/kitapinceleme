@@ -93,7 +93,7 @@ async function handleLogin() {
 
         // Redirect to home page after a short delay
         setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
         }, 1500);
 
     } catch (error) {
@@ -277,7 +277,7 @@ function checkAuthStatus() {
             
             if (payload.exp > currentTime) {
                 // Token is valid, redirect to home
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
                 return;
             } else {
                 // Token expired, clear it

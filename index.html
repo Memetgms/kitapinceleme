@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:;">
     <title>Online Kitap İnceleme</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -34,10 +35,10 @@
                     </li>
                 </ul>
                 <div class="d-flex">
-                    <button class="btn btn-outline-light me-2" onclick="showLoginModal()">
+                    <button class="btn btn-outline-light me-2" onclick="goToLogin()">
                         <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
                     </button>
-                    <button class="btn btn-light" onclick="showRegisterModal()">
+                    <button class="btn btn-light" onclick="goToRegister()">
                         <i class="fas fa-user-plus me-1"></i>Kayıt Ol
                     </button>
                 </div>
@@ -63,8 +64,21 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-lg-6 text-center">
-                    <i class="fas fa-books hero-icon"></i>
+                <div class="col-lg-6">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center mb-3 mb-md-0" id="hero-popular-book-container">
+                             <!-- En Popüler Kitap buraya yüklenecek -->
+                            <div class="hero-icon-placeholder">
+                                <i class="fas fa-crown fa-6x text-white-50"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center" id="hero-favorite-book-container">
+                            <!-- En Favori Kitap buraya yüklenecek -->
+                            <div class="hero-icon-placeholder">
+                                <i class="fas fa-heart fa-6x text-white-50"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,6 +88,24 @@
     <div class="container my-5">
         <!-- Filter Section -->
         <div class="filter-section">
+            <div class="row mb-3">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="authorFilterInput" placeholder="Yazara göre filtrele...">
+                        <button class="btn btn-outline-primary" type="button" onclick="filterByAuthor()">
+                            <i class="fas fa-user"></i> Filtrele
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="yearFilterInput" placeholder="Yıla göre filtrele...">
+                        <button class="btn btn-outline-primary" type="button" onclick="filterByYear()">
+                            <i class="fas fa-calendar"></i> Filtrele
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-8">
                     <div class="btn-group" role="group" id="genreFilter">
@@ -83,14 +115,20 @@
                         <!-- Kategori butonları JavaScript ile eklenecek -->
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select class="form-select" id="sortSelect" onchange="sortBooks()">
+                <div class="col-md-4 d-flex gap-2">
+                    <select class="form-select" id="sortSelect">
                         <option value="">Sıralama</option>
                         <option value="title">İsme Göre</option>
                         <option value="author">Yazara Göre</option>
                         <option value="price">Fiyata Göre</option>
                         <option value="date">Tarihe Göre</option>
+                        <option value="favorites">Favori Sayısına Göre</option>
                     </select>
+                    <select class="form-select" id="orderSelect">
+                        <option value="asc">Artan</option>
+                        <option value="desc">Azalan</option>
+                    </select>
+                    <button class="btn btn-primary" id="sortBtn">Sırala</button>
                 </div>
             </div>
         </div>

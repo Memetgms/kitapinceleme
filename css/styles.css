@@ -20,7 +20,7 @@
 }
 
 .hero-icon {
-    font-size: 4rem; /* 6rem'den 4rem'e düşürüldü */
+    font-size: 6rem;
     color: rgba(255, 255, 255, 0.3);
     animation: float 3s ease-in-out infinite;
 }
@@ -400,4 +400,288 @@ footer {
 .form-select:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Admin Panel Styles */
+.admin-sidebar {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: sticky;
+    top: 0;
+}
+
+.admin-content {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.admin-sidebar .nav-link {
+    color: rgba(255,255,255,0.8);
+    transition: all 0.3s;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.admin-sidebar .nav-link:hover, 
+.admin-sidebar .nav-link.active {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-card i {
+    opacity: 0.8;
+}
+
+.table-responsive {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.btn-action {
+    margin: 0 2px;
+    border-radius: 6px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+    color: white;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: white;
+}
+
+/* Responsive Admin Panel */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        position: static;
+        min-height: auto;
+    }
+    
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-action {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Hero Popular Book */
+.hero-book-card {
+    background: transparent; /* Arkaplanı animasyon için şeffaf yap */
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 320px; /* Kartların çok büyümesini engelle */
+    min-height: 180px;
+    margin: 0 auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.hero-book-card::before { /* Dönen ışık efekti */
+    content: '';
+    position: absolute;
+    z-index: -2;
+    left: -50%;
+    top: -50%;
+    width: 200%;
+    height: 200%;
+    background-color: #ffc107;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-image: conic-gradient(transparent, rgba(255, 215, 0, 0.7), transparent 30%);
+    animation: rotateBorder 4s linear infinite;
+}
+
+.hero-book-card::after { /* İç arkaplan */
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: 2px;
+    top: 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    background: #fff;
+    border-radius: 6px;
+}
+
+.hero-book-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.hero-book-card-badge {
+    position: absolute;
+    top: 20px;
+    left: -35px;
+    background: linear-gradient(45deg, #ffc107, #ff9800);
+    color: white;
+    padding: 5px 35px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    z-index: 2;
+    width: 160px;
+    text-align: center;
+}
+
+.hero-book-img {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-left: 20px; /* Kurdelenin altında kalmaması için */
+    z-index: 1; /* içeriğin arkaplanın önünde kalması için */
+}
+
+.hero-book-info {
+    margin-left: 25px;
+    text-align: left;
+    color: #343a40;
+    z-index: 1; /* içeriğin arkaplanın önünde kalması için */
+}
+
+.hero-book-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.hero-book-author {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: #6c757d;
+}
+
+.hero-book-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--bs-primary);
+}
+
+@keyframes rotateBorder {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Favorite Book Card Styles --- */
+.hero-book-card-favorite::before {
+    background-image: conic-gradient(transparent, rgba(233, 30, 99, 0.8), transparent 30%);
+}
+
+.hero-book-card-badge-favorite {
+    position: absolute;
+    top: 20px;
+    left: -35px;
+    background: linear-gradient(45deg, #e91e63, #c2185b);
+    color: white;
+    padding: 5px 35px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    z-index: 2;
+    width: 160px;
+    text-align: center;
+}
+
+.hero-book-img {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-left: 20px; /* Kurdelenin altında kalmaması için */
+    z-index: 1; /* içeriğin arkaplanın önünde kalması için */
 } 

@@ -35,7 +35,27 @@
                     </li>
                 </ul>
                 <div class="d-flex">
-                    <!-- Auth buttons will be populated by JavaScript -->
+                    <button class="btn btn-outline-light me-2" onclick="goToHome()">
+                        <i class="fas fa-home me-1"></i>Ana Sayfa
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" id="userDropdown">
+                            <i class="fas fa-user me-1"></i>Kullanıcı
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showProfile()">
+                                <i class="fas fa-user-circle me-2"></i>Profil
+                            </a></li>
+                            <li id="adminPanelItem" style="display: none;">
+                                <a class="dropdown-item" href="#" onclick="showAdminPanel()">
+                                    <i class="fas fa-cog me-2"></i>Admin Panel
+                                </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,10 +126,7 @@
                             <p id="bookDescription"></p>
                         </div>
                         <div class="book-actions mt-4">
-                            <button class="btn btn-primary btn-lg me-3" onclick="addToCart()">
-                                <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                            </button>
-                            <button class="btn btn-outline-primary btn-lg" onclick="addToFavorites()">
+                            <button id="favoriteBtn" class="btn btn-outline-primary btn-lg" onclick="addToFavorites()">
                                 <i class="fas fa-heart me-2"></i>Favorilere Ekle
                             </button>
                         </div>

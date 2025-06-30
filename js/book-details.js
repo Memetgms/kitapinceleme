@@ -5,6 +5,7 @@ const API_BASE_URL = 'https://localhost:7153/api';
 let currentBook = null;
 let currentBookId = null;
 let selectedRating = 5;
+let isFavorite = false;
 
 // DOM Elements - null check ekleyelim
 let bookTitle, bookAuthor, bookDescription, bookPrice, bookGenre, bookPhoto, bookRating, bookRatingCount;
@@ -45,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     checkAuthStatus();
     updateAuthButtons();
+    updateUserDropdown();
+    setTimeout(checkFavoriteStatus, 500); // Kitap yüklendikten sonra kontrol et
 });
 
 // Setup event listeners
@@ -219,8 +222,8 @@ function displayReviews(reviews) {
     }
 
     reviewsContainer.innerHTML = reviews.map(review => `
-        <div class="review-item">
-            <div class="review-header">
+        <div class="review-item mb-3">
+            <div class="review-header d-flex justify-content-between align-items-center">
                 <div class="review-user">
                     <i class="fas fa-user-circle me-2"></i>
                     <strong>${review.userName}</strong>
@@ -229,8 +232,8 @@ function displayReviews(reviews) {
                     ${generateStarRating(review.rating)}
                 </div>
             </div>
-            <div class="review-content">
-                ${review.comment ? `<p class="review-comment">${review.comment}</p>` : ''}
+            <div class="review-content mb-2">
+                ${review.comment ? `<p class="review-comment mb-1">${review.comment}</p>` : ''}
             </div>
         </div>
     `).join('');
@@ -491,71 +494,71 @@ function checkAuthStatus() {
 
 // Update auth buttons based on login status
 function updateAuthButtons() {
-    const authButtonsContainer = document.querySelector('.d-flex');
-    if (!authButtonsContainer) return;
-
     const token = localStorage.getItem('authToken');
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
     if (token && userInfo.userName) {
         // User is logged in
-        authButtonsContainer.innerHTML = `
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-user me-1"></i>${userInfo.userName}
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="showProfile()">
-                        <i class="fas fa-user-circle me-2"></i>Profil
-                    </a></li>
-                    ${userInfo.userRole === 'Admin' ? 
-                        `<li><a class="dropdown-item" href="#" onclick="showAdminPanel()">
-                            <i class="fas fa-cog me-2"></i>Admin Panel
-                        </a></li>` : ''
-                    }
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#" onclick="logout()">
-                        <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
-                    </a></li>
-                </ul>
-            </div>
-        `;
+        updateUserDropdown();
+        
+        // Show add review button
+        const addReviewBtn = document.getElementById('addReviewBtn');
+        if (addReviewBtn) {
+            addReviewBtn.style.display = 'block';
+        }
     } else {
         // User is not logged in
-        authButtonsContainer.innerHTML = `
-            <button class="btn btn-outline-light me-2" onclick="goToLogin()">
-                <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
-            </button>
-            <button class="btn btn-light" onclick="goToRegister()">
-                <i class="fas fa-user-plus me-1"></i>Kayıt Ol
-            </button>
-        `;
+        updateUserDropdown();
+        
+        // Hide add review button
+        const addReviewBtn = document.getElementById('addReviewBtn');
+        if (addReviewBtn) {
+            addReviewBtn.style.display = 'none';
+        }
+    }
+}
+
+// Update user dropdown
+function updateUserDropdown() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userDropdown) {
+        if (userInfo.userName) {
+            userDropdown.innerHTML = `<i class="fas fa-user me-1"></i>${userInfo.userName}`;
+        } else {
+            userDropdown.innerHTML = `<i class="fas fa-user me-1"></i>Kullanıcı`;
+        }
+    }
+    
+    // Admin paneli göster/gizle
+    const adminPanelItem = document.getElementById('adminPanelItem');
+    if (adminPanelItem) {
+        if (userInfo.userRole === 'Admin') {
+            adminPanelItem.style.display = 'block';
+        } else {
+            adminPanelItem.style.display = 'none';
+        }
     }
 }
 
 // Navigation functions
-function goToLogin() {
-    window.location.href = 'login.html';
+function goToHome() {
+    window.location.href = '../index.html';
 }
 
-function goToRegister() {
-    window.location.href = 'register.html';
+function showProfile() {
+    window.location.href = 'profile.html';
+}
+
+function showAdminPanel() {
+    window.location.href = 'admin.html';
 }
 
 function logout() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userInfo');
-    updateAuthButtons();
-    checkAuthStatus();
-    window.location.reload();
-}
-
-function showProfile() {
-    alert('Profil sayfası yakında eklenecek!');
-}
-
-function showAdminPanel() {
-    alert('Admin paneli yakında eklenecek!');
+    window.location.href = '../index.html';
 }
 
 // Show loading spinner
@@ -639,7 +642,89 @@ function addToCart() {
     alert('Sepete ekleme özelliği yakında eklenecek!');
 }
 
-// Add to favorites function (placeholder)
-function addToFavorites() {
-    alert('Favorilere ekleme özelliği yakında eklenecek!');
+// Favori durumunu kontrol et
+async function checkFavoriteStatus() {
+    const token = localStorage.getItem('authToken');
+    if (!token || !currentBookId) return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/favorites`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const favorites = await response.json();
+            isFavorite = favorites.some(f => f.bookId == currentBookId);
+            updateFavoriteButton();
+        }
+    } catch (e) { console.error('Favori kontrolü hatası:', e); }
+}
+
+// Favori butonunu güncelle
+function updateFavoriteButton() {
+    const btn = document.getElementById('favoriteBtn');
+    if (!btn) return;
+    if (isFavorite) {
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-danger');
+        btn.innerHTML = '<i class="fas fa-heart me-2"></i>Favorilerden Çıkar';
+        btn.onclick = removeFromFavorites;
+    } else {
+        btn.classList.remove('btn-danger');
+        btn.classList.add('btn-outline-primary');
+        btn.innerHTML = '<i class="fas fa-heart me-2"></i>Favorilere Ekle';
+        btn.onclick = addToFavorites;
+    }
+}
+
+// Favorilere ekle
+async function addToFavorites() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert('Favorilere eklemek için giriş yapmalısınız!');
+        return;
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/favorites?bookId=${currentBookId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            isFavorite = true;
+            updateFavoriteButton();
+        } else {
+            const err = await response.text();
+            alert('Favorilere eklenemedi: ' + err);
+        }
+    } catch (e) {
+        alert('Favorilere eklenirken hata oluştu!');
+    }
+}
+
+// Favorilerden çıkar
+async function removeFromFavorites() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    try {
+        // Önce favori id'sini bul
+        const response = await fetch(`${API_BASE_URL}/favorites`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const favorites = await response.json();
+            const fav = favorites.find(f => f.bookId == currentBookId);
+            if (fav) {
+                const delRes = await fetch(`${API_BASE_URL}/favorites/${fav.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (delRes.ok) {
+                    isFavorite = false;
+                    updateFavoriteButton();
+                } else {
+                    alert('Favorilerden çıkarılamadı!');
+                }
+            }
+        }
+    } catch (e) {
+        alert('Favorilerden çıkarılırken hata oluştu!');
+    }
 } 
